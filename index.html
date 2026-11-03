@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>BrowOS</title>
+	<title>BrowOS+</title>
 
 	<link rel="stylesheet" href="css/base.css">
 	<link rel="stylesheet" href="css/taskbar.css">
@@ -21,6 +21,8 @@
 	<link rel="stylesheet" href="css/browser.css">
 	<link rel="stylesheet" href="css/update.css">
 	<link rel="stylesheet" href="css/browstore.css">
+	<link rel="manifest" href="manifest.webmanifest">
+	<meta name="theme-color" content="#2196F3">
 </head>
 
 <body>
@@ -31,11 +33,11 @@
 	<div class="boot-input-shield" aria-hidden="true"></div>
 
 	<main class="desktop-shell" aria-label="BrowOS desktop">
-	<h1 id="desktopTitle">BrowOS</h1>
+	<h1 id="desktopTitle">BrowOS+</h1>
 
 	<!-- Start menu -->
 	<div class="start-menu" id="startMenu">
-		<h2>BrowOS</h2>
+		<h2>BrowOS+</h2>
 
 		<div class="menu-item apps-menu-item" id="appsMenuItem">
 			<span>Apps</span>
@@ -116,26 +118,115 @@
 			</div>
 		</div>
 
-		<div class="browser-app">
-			<img class="browser-logo" src="icons/browser-icon.png" alt="">
-
-			<label class="browser-search">
-				<svg viewBox="0 0 24 24" aria-hidden="true">
-					<circle cx="11" cy="11" r="7"></circle>
-					<line x1="16.5" y1="16.5" x2="21" y2="21"></line>
-				</svg>
-
-				<input id="browserInput" type="text" placeholder="Search the web or type an address" spellcheck="false">
-			</label>
-
-			<div class="browser-engines" id="browserEngines">
-				<button data-engine="google">Google</button>
-				<button data-engine="duckduckgo">DuckDuckGo</button>
-				<button data-engine="bing">Bing</button>
-				<button data-engine="brave">Brave</button>
+		<div class="browser-app" id="browserApp">
+			<div class="browser-toolbar">
+				<button class="browser-nav-btn" id="browserBack" title="Back (Alt+Left)">←</button>
+				<button class="browser-nav-btn" id="browserForward" title="Forward (Alt+Right)">→</button>
+				<button class="browser-nav-btn" id="browserReload" title="Reload (Ctrl+R)">⟳</button>
+				<button class="browser-nav-btn" id="browserHome" title="Home">⌂</button>
+				<div class="browser-address-bar">
+					<input id="browserAddress" type="text" placeholder="Search the web or type an address" spellcheck="false" autocomplete="off">
+					<button id="browserGo" title="Go">Go</button>
+				</div>
+				<button class="browser-nav-btn" id="browserBookmark" title="Bookmark this page">☆</button>
+				<button class="browser-nav-btn" id="browserCopyUrl" title="Copy URL">⧉</button>
+				<button class="browser-nav-btn" id="browserOpenExternal" title="Open in system browser">↗</button>
+				<button class="browser-nav-btn" id="browserSettings" title="Browser settings">⚙</button>
 			</div>
 
-			<div class="browser-hint">Opens in a new tab</div>
+			<div class="browser-tabs" id="browserTabs">
+				<button id="browserNewTab" title="New tab (Ctrl+T)">+</button>
+			</div>
+
+			<div class="browser-viewport" id="browserViewport">
+				<div class="browser-loading-bar" id="browserLoadingBar" hidden></div>
+				<div class="browser-frames" id="browserFrames"></div>
+				<div class="browser-startpage" id="browserStartpage">
+					<img class="browser-logo" src="icons/browser-icon.png" alt="">
+					<div class="browser-start-search">
+						<input id="browserStartSearchInput" type="text" placeholder="Search the web or type an address" spellcheck="false">
+						<button id="browserStartSearchButton">Search</button>
+					</div>
+					<div class="browser-search-engines" id="browserEngines">
+						<button data-engine="google">Google</button>
+						<button data-engine="duckduckgo">DuckDuckGo</button>
+						<button data-engine="bing">Bing</button>
+						<button data-engine="brave">Brave</button>
+					</div>
+					<p class="browser-hint" id="browserHint">Type an address above to begin</p>
+				</div>
+				<div class="browser-settings-page" id="browserSettingsPage" hidden>
+					<div class="browser-settings-card">
+						<button class="setting-button" id="browserSettingsBack">← Back</button>
+						<h3>Browser settings</h3>
+
+						<div class="setting-row">
+							<span>Default search engine</span>
+							<select id="browserSelfSearchEngine">
+								<option value="google">Google</option>
+								<option value="duckduckgo">DuckDuckGo</option>
+								<option value="bing">Bing</option>
+								<option value="brave">Brave</option>
+							</select>
+						</div>
+
+						<div class="setting-row">
+							<span>Homepage</span>
+							<input type="text" id="browserSelfHomepage" placeholder="https://example.com">
+						</div>
+
+						<div class="setting-row">
+							<span>New tab page</span>
+							<select id="browserSelfNewTabMode">
+								<option value="browos">BrowOS+ search page</option>
+								<option value="url">Specific URL</option>
+								<option value="search">Search engine page</option>
+							</select>
+						</div>
+
+						<div class="setting-row">
+							<span>New tab URL</span>
+							<input type="text" id="browserSelfNewTabUrl" placeholder="https://example.com">
+						</div>
+
+						<div class="setting-row">
+							<span>External fallback</span>
+							<select id="browserSelfExternalFallback">
+								<option value="ask">Ask before opening externally</option>
+								<option value="auto">Open externally when embedding fails</option>
+								<option value="never">Never open externally</option>
+							</select>
+						</div>
+
+						<div class="setting-row">
+							<span>Ad blocker</span>
+							<label class="switch">
+								<input type="checkbox" id="browserSelfAdBlocker">
+								<span class="slider"></span>
+							</label>
+						</div>
+
+						<div class="setting-row">
+							<button class="setting-button" id="browserSelfClearData">Clear browsing data</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="browser-error-page" id="browserErrorPage" hidden>
+					<div class="browser-error-card">
+						<div class="browser-error-icon">⚠</div>
+						<h3 id="browserErrorTitle">Could not load page</h3>
+						<p id="browserErrorMessage"></p>
+						<div class="browser-error-url" id="browserErrorUrl"></div>
+						<div class="browser-error-actions">
+							<button id="browserErrorRetry">Retry</button>
+							<button id="browserErrorExternal">Open in normal browser tab</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="browser-status-bar" id="browserStatusBar"></div>
 		</div>
 	</div>
 
@@ -158,8 +249,8 @@
 				<div class="settings-nav active" data-page="personalizationPage">Personalization</div>
 				<div class="settings-nav" data-page="startupPage">Startup</div>
 				<div class="settings-nav" data-page="taskbarPage">Taskbar</div>
-				<div class="settings-nav" data-page="aboutPage">About</div>
-				<div class="settings-nav" data-page="creditsPage">Credits</div>
+				<div class="settings-nav" data-page="browserPage">Browser</div>
+				<div class="settings-nav" data-page="aboutPage">About & Credits</div>
 			</div>
 
 			<div class="settings-pages">
@@ -334,19 +425,119 @@
 					</div>
 				</div>
 
-				<!-- About -->
+				<!-- Browser -->
+				<div class="settings-page" id="browserPage">
+					<h2>Browser</h2>
+
+					<div class="setting-row">
+						<span>Local backend URL</span>
+						<input type="text" id="browserBackendUrl" placeholder="http://localhost:8787">
+					</div>
+
+					<div class="setting-row">
+						<span>Backend status</span>
+						<span id="browserBackendStatus">Unknown</span>
+						<button id="browserBackendTest">Test connection</button>
+					</div>
+
+					<div class="setting-row">
+						<span>Enable local proxy</span>
+						<label class="switch">
+							<input type="checkbox" id="browserProxyEnabled">
+							<span class="slider"></span>
+						</label>
+					</div>
+
+					<div class="setting-row">
+						<span>Compatibility mode</span>
+						<select id="browserCompatMode">
+							<option value="auto">Auto (proxy when available)</option>
+							<option value="proxy">Always use proxy</option>
+							<option value="direct">Direct (no proxy)</option>
+						</select>
+					</div>
+
+					<div class="setting-row">
+						<span>Default search engine</span>
+						<select id="browserSearchEngine">
+							<option value="google">Google</option>
+							<option value="duckduckgo">DuckDuckGo</option>
+							<option value="bing">Bing</option>
+							<option value="brave">Brave</option>
+						</select>
+					</div>
+
+					<div class="setting-row">
+						<span>Homepage</span>
+						<input type="text" id="browserHomepage" placeholder="https://example.com">
+					</div>
+
+					<div class="setting-row">
+						<span>New tab page</span>
+						<select id="browserNewTabMode">
+							<option value="browos">BrowOS search page</option>
+							<option value="url">Specific URL</option>
+							<option value="search">Search engine page</option>
+						</select>
+					</div>
+
+					<div class="setting-row">
+						<span>New tab URL</span>
+						<input type="text" id="browserNewTabUrl" placeholder="https://example.com">
+					</div>
+
+					<div class="setting-row">
+						<span>Ad blocker</span>
+						<label class="switch">
+							<input type="checkbox" id="browserAdBlocker">
+							<span class="slider"></span>
+						</label>
+					</div>
+
+					<div class="setting-row">
+						<span>External browser fallback</span>
+						<select id="browserExternalFallback">
+							<option value="ask">Ask before opening externally</option>
+							<option value="auto">Open externally when embedding fails</option>
+							<option value="never">Never open externally</option>
+						</select>
+					</div>
+
+					<h3>Browsing data</h3>
+
+					<div class="setting-row">
+						<button class="setting-button" id="browserClearHistory">Clear history</button>
+						<button class="setting-button" id="browserClearBookmarks">Clear bookmarks</button>
+						<button class="setting-button" id="browserClearData">Clear all browsing data</button>
+					</div>
+
+					<p class="browser-backend-help" id="browserBackendHelp">
+						The local backend is optional. Without it, BrowOS+ Browser still works with reduced compatibility.
+						See README for setup instructions.
+					</p>
+				</div>
+
+				<!-- About & Credits -->
 				<div class="settings-page" id="aboutPage">
-					<h2>About</h2>
+					<h2>About & Credits</h2>
 
 					<div class="about-box">
 						<img src="icons/browos-logo.png">
 
 						<div>
-							<div class="about-name">BrowOS</div>
-							<p id="aboutVersion">Version 1.0</p>
-							<p class="about-by">By <a href="https://www.youtube.com/@YourAllyhere" target="_blank">Allysun</a></p>
+							<div class="about-name">BrowOS+</div>
+							<p id="aboutVersion">Version 1.0.2</p>
+							<p class="about-by">By Allysun, Opencode and Ramithu</p>
 						</div>
 					</div>
+
+					<h3>Credits</h3>
+					<ul class="credits">
+						<li>Notepad by <a href="https://github.com/amitmerchant1990/notepad" target="_blank">Amit Merchant</a></li>
+						<li>Calculator by <a href="https://github.com/nikh-tail/CodeAlpha_Task" target="_blank">Nikhil Rathor</a></li>
+						<li>Paint by <a href="https://github.com/viliusle/miniPaint" target="_blank">ViliusL</a></li>
+						<li>Contributors: Allysun, Opencode, Ramithu</li>
+					</ul>
 
 					<button class="reset-button" id="resetSettingsButton">Reset settings</button>
 				</div>
@@ -607,12 +798,12 @@
 		</div>
 
 		<div class="explorer-content">
-			<div class="explorer-sidebar"></div>
+			<div class="explorer-sidebar" id="explorerSidebar"></div>
 
-			<div class="explorer-files files-construction">
-				<div class="construction-icon">🚧</div>
-				<div class="construction-title">Under construction</div>
-				<div class="construction-text">Files is coming in a future update.</div>
+			<div class="explorer-main">
+				<div class="explorer-toolbar" id="explorerToolbar"></div>
+				<div class="explorer-breadcrumb" id="explorerBreadcrumb"></div>
+				<div class="explorer-files" id="explorerFiles"></div>
 			</div>
 		</div>
 	</div>
@@ -677,6 +868,7 @@
 <script src="js/windows.js"></script>
 <script src="js/taskbar.js"></script>
 <script src="js/settings.js"></script>
+<script src="js/browser-settings.js"></script>
 <script src="js/clock-app.js"></script>
 <script src="js/appearance.js"></script>
 <script src="js/maximize.js"></script>

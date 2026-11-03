@@ -1,156 +1,138 @@
-/* Explorer window */
+/* Files / Virtual Disk */
 
 .explorer-window {
-	position: fixed;
-
-	width: 700px;
-	height: 450px;
-
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-
-	background: rgba(25, 25, 30, 0.92);
-	backdrop-filter: blur(20px);
-
-	border: 1px solid rgba(255, 255, 255, 0.15);
-	border-radius: 18px;
-
-	display: none;
-	flex-direction: column;
-
-	overflow: hidden;
-
-	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-
-	z-index: 100;
-}
-
-.explorer-window.show {
-	display: flex;
-}
-
-.explorer-header {
-	height: 48px;
-
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-
-	padding: 0 16px;
-
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-
-	cursor: grab;
-	user-select: none;
-}
-
-.explorer-header:active {
-	cursor: grabbing;
-}
-
-.explorer-header h3 {
-	margin: 0;
-	font-size: 15px;
-}
-
-.close-explorer {
-	border: none;
-	background: transparent;
-
-	color: white;
-	font-size: 20px;
-
-	cursor: pointer;
+	width: 720px;
+	height: 480px;
 }
 
 .explorer-content {
 	display: flex;
 	flex: 1;
+	min-height: 0;
 }
 
 .explorer-sidebar {
-	width: 150px;
-	padding: 14px;
-
-	border-right: 1px solid rgba(255, 255, 255, 0.1);
+	width: 180px;
+	border-right: 1px solid rgba(var(--soft), 0.12);
+	padding: 8px;
+	overflow: auto;
 }
 
-.explorer-sidebar div {
-	padding: 9px;
-
+.explorer-drive {
+	padding: 8px;
 	border-radius: 8px;
 	cursor: pointer;
+	margin-bottom: 4px;
 }
 
-.explorer-sidebar div:hover {
-	background: rgba(255, 255, 255, 0.08);
+.explorer-drive.active {
+	background: rgba(var(--soft), 0.12);
+}
+
+.drive-status {
+	font-size: 10px;
+	color: rgba(var(--soft), 0.5);
+}
+
+.explorer-main {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.explorer-toolbar {
+	display: flex;
+	gap: 6px;
+	padding: 8px;
+	border-bottom: 1px solid rgba(var(--soft), 0.12);
+	flex-wrap: wrap;
+}
+
+.explorer-btn {
+	padding: 6px 10px;
+	border: none;
+	border-radius: 6px;
+	background: rgba(var(--soft), 0.08);
+	color: var(--text);
+	cursor: pointer;
+	font-size: 12px;
+}
+
+.explorer-btn:hover {
+	background: rgba(var(--soft), 0.16);
+}
+
+.explorer-breadcrumb {
+	padding: 6px 8px;
+	font-size: 12px;
+	color: rgba(var(--soft), 0.6);
+	border-bottom: 1px solid rgba(var(--soft), 0.08);
 }
 
 .explorer-files {
 	flex: 1;
-	padding: 20px;
+	overflow: auto;
+	padding: 8px;
 }
 
-.folder-nav.active {
-	background: rgba(255, 255, 255, 0.12);
-}
-
-.file-grid {
-	display: grid;
-	grid-template-columns: repeat(4, 90px);
-
-	gap: 18px;
-	margin-top: 20px;
-}
-
-.file-item {
+.file-list {
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-
-	padding: 10px 5px;
-
-	border-radius: 10px;
-	cursor: pointer;
-
-	font-size: 12px;
-	text-align: center;
+	gap: 2px;
 }
 
-.file-item:hover {
-	background: rgba(255, 255, 255, 0.08);
+.file-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 8px;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+.file-row:hover {
+	background: rgba(var(--soft), 0.06);
+}
+
+.file-row.selected {
+	background: rgba(var(--soft), 0.16);
 }
 
 .file-icon {
-	font-size: 32px;
-	margin-bottom: 7px;
+	width: 20px;
 }
 
-/* Files: under construction */
+.file-name {
+	flex: 1;
+}
 
-.files-construction {
+.file-size {
+	font-size: 11px;
+	color: rgba(var(--soft), 0.5);
+}
+
+.empty-folder {
+	color: rgba(var(--soft), 0.5);
+	padding: 16px;
+}
+
+.mount-screen {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 6px;
-
+	gap: 12px;
+	height: 100%;
 	text-align: center;
+	padding: 24px;
 }
 
-.construction-icon {
-	font-size: 44px;
-	margin-bottom: 6px;
-}
-
-.construction-title {
-	font-size: 17px;
-	font-weight: 600;
-}
-
-.construction-text {
-	color: rgba(var(--soft), 0.55);
-	font-size: 13px;
+.mount-screen button {
+	padding: 8px 14px;
+	border: none;
+	border-radius: 8px;
+	background: var(--accent);
+	color: #fff;
+	cursor: pointer;
 }

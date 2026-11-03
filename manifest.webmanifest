@@ -1,0 +1,13 @@
+{
+  "name": "BrowOS+",
+  "short_name": "BrowOS+",
+  "description": "BrowOS+ desktop environment with integrated browser",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1e1e24",
+  "theme_color": "#2196F3",
+  "icons": [
+    { "src": "icons/browos-logo.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/browos-logo.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

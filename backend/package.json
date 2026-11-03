@@ -1,0 +1,17 @@
+{
+  "name": "browos-backend",
+  "version": "1.0.0",
+  "description": "Local backend proxy for BrowOS+ Browser",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "fastify": "^5.0.0",
+    "@fastify/cors": "^10.0.0",
+    "@fastify/rate-limit": "^10.0.0"
+  }
+}

@@ -165,6 +165,7 @@ async function keepInside(windowId) {
 	chrome.windows.update(windowId, update).catch(function () {});
 }
 
+if (typeof chrome !== "undefined" && chrome.windows && chrome.windows.onBoundsChanged) {
 chrome.windows.onBoundsChanged.addListener(async function (changed) {
 	// BrowOS itself moved: the floating windows follow (position only)
 
@@ -221,6 +222,7 @@ chrome.windows.onBoundsChanged.addListener(async function (changed) {
 		keepInside(changed.id);
 	}, 150);
 });
+}
 
 // Double check, a few times per second
 
@@ -300,14 +302,16 @@ setInterval(async function () {
 	}
 }, 250);
 
-chrome.windows.onRemoved.addListener(function (windowId) {
+if (typeof chrome !== "undefined" && chrome.windows && chrome.windows.onRemoved) {
+	chrome.windows.onRemoved.addListener(function (windowId) {
 	const appId = floatingAppId(windowId);
 
 	if (appId) {
 		delete floatingWindows[appId];
 		setFloatingButton(appId, false);
 	}
-});
+	});
+}
 
 // floating windows minimize with BrowOS and come back with it
 
@@ -340,11 +344,13 @@ window.addEventListener("pagehide", function () {
 	});
 });
 
-chrome.windows.getCurrent().then(function (main) {
-	mainWindowId = main.id;
+if (typeof chrome !== "undefined" && chrome.windows && chrome.windows.getCurrent) {
+	chrome.windows.getCurrent().then(function (main) {
+		mainWindowId = main.id;
 
-	lastMainBounds = {
-		left: main.left,
-		top: main.top,
-	};
-});
+		lastMainBounds = {
+			left: main.left,
+			top: main.top,
+		};
+	}).catch(function () {});
+}

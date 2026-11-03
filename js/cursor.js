@@ -244,7 +244,10 @@ let appCursorImage = null;
 
 function cursorImageUrl() {
 	if (cursorSelect.value === "browos") {
-		return chrome.runtime.getURL("cursors/cursor.png");
+		if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.getURL) {
+			return chrome.runtime.getURL("cursors/cursor.png");
+		}
+		return "cursors/cursor.png";
 	}
 
 	if (cursorSelect.value === "custom") {
@@ -270,20 +273,30 @@ function prepareAppCursor() {
 	const image = new Image();
 
 	image.addEventListener("load", function () {
-		// browsers ignore cursor images bigger than 128px
+		try {
+			// browsers ignore cursor images bigger than 128px
 
-		const size = Math.min(Number(cursorSizeSlider.value) || 32, 128);
+			const size = Math.min(Number(cursorSizeSlider.value) || 32, 128);
 
-		const scale = size / Math.max(image.width, image.height);
+			const scale = size / Math.max(image.width, image.height);
 
-		const canvas = document.createElement("canvas");
+			const canvas = document.createElement("canvas");
 
-		canvas.width = Math.max(1, Math.round(image.width * scale));
-		canvas.height = Math.max(1, Math.round(image.height * scale));
+			canvas.width = Math.max(1, Math.round(image.width * scale));
+			canvas.height = Math.max(1, Math.round(image.height * scale));
 
-		canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+			canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
 
-		appCursorImage = canvas.toDataURL("image/png");
+			appCursorImage = canvas.toDataURL("image/png");
+		} catch (error) {
+			appCursorImage = null;
+		}
+
+		applyCursorToApps();
+	});
+
+	image.addEventListener("error", function () {
+		appCursorImage = null;
 
 		applyCursorToApps();
 	});

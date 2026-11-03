@@ -213,4 +213,8 @@ resetSettingsButton.addEventListener("click", function () {
 
 // About: the real version, so users can see if they're up to date
 
-document.getElementById("aboutVersion").textContent = "Version " + chrome.runtime.getManifest().version;
+try {
+	document.getElementById("aboutVersion").textContent = "Version " + (chrome.runtime && chrome.runtime.getManifest ? chrome.runtime.getManifest().version : "1.0.2");
+} catch (error) {
+	document.getElementById("aboutVersion").textContent = "Version 1.0.2";
+}

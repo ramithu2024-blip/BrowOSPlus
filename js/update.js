@@ -38,7 +38,11 @@ function isNewerVersion(latest, current) {
 }
 
 function currentVersion() {
-	return chrome.runtime.getManifest().version;
+	try {
+		return chrome.runtime.getManifest().version;
+	} catch (error) {
+		return "1.0.2";
+	}
 }
 
 // the update BrowOS knows about, if it's still newer than this BrowOS

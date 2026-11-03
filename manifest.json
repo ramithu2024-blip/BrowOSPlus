@@ -1,6 +1,6 @@
 {
 	"manifest_version": 3,
-	"name": "BrowOS",
+	"name": "BrowOS+",
 	"version": "1.0.1",
 	"description": "Turns your new tab into a desktop OS with windows, a Start menu, a taskbar, built-in apps, BrowStore and custom wallpapers.",
 	"icons": {

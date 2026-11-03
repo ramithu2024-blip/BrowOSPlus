@@ -13,6 +13,11 @@ powerButton.addEventListener("click", async function () {
 		return;
 	}
 
+	if (typeof chrome === "undefined" || !chrome.windows) {
+		alert("Close the browser tab manually to exit BrowOS+.");
+		return;
+	}
+
 	const currentWindow = await chrome.windows.getCurrent();
 
 	await chrome.windows.remove(currentWindow.id);

@@ -1,0 +1,12 @@
+{
+  "name": "browos-plus",
+  "version": "1.0.2",
+  "description": "BrowOS+ with integrated browser and local backend proxy",
+  "scripts": {
+    "backend:install": "cd backend && npm install",
+    "backend:start": "cd backend && npm start",
+    "backend:dev": "cd backend && npm run dev",
+    "backend:test": "cd backend && npm test"
+  },
+  "private": true
+}

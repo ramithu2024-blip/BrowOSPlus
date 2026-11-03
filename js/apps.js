@@ -133,6 +133,39 @@ function renameApp(oldId, newId) {
 
 renameApp("helium", "browser");
 
+// Ensure the bundled Craft App Suite is visible in the Start menu
+
+const craftAppIds = [
+	"photocraft",
+	"vectorcraft",
+	"filmcraft",
+	"lightcraft",
+	"pdfcraft",
+	"effectcraft",
+	"designcraft",
+	"figcraft",
+	"wordcraft",
+	"soundcraft",
+	"deckcraft",
+	"cadcraft",
+	"gridcraft",
+	"texturecraft",
+	"craft-anything",
+];
+
+let craftAppsChanged = false;
+
+craftAppIds.forEach(function (id) {
+	if (!installedApps.includes(id)) {
+		installedApps.push(id);
+		craftAppsChanged = true;
+	}
+});
+
+if (craftAppsChanged) {
+	saveApps();
+}
+
 // Finding apps
 
 function siteToApp(site) {
@@ -454,6 +487,13 @@ function launchApp(id) {
 	}
 
 	const mode = app.url ? getOpenMode(id) : "inside";
+
+	if (app.url && app.url.startsWith("apps/") && location.protocol === "file:") {
+		// Fall back to the hosted Creative Suite when running from file://
+		const hosted = "https://ramithu2024-blip.github.io/BrowOS-Creative-Suite/" + app.url;
+
+		app.url = hosted;
+	}
 
 	if (mode === "tab") {
 		openInBrowserTab(app.url);

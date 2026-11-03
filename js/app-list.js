@@ -147,6 +147,22 @@ const appCatalog = [
 		website: "https://ellisonleao.github.io/clumsy-bird/",
 		github: "ellisonleao/clumsy-bird",
 	},
+
+	{ id: "photocraft", name: "PhotoCraft", category: "apps", icon: "apps/photocraft/icon.png", url: "apps/photocraft/index.html", website: "https://getartcraft.com/apps/photocraft", github: "storytold/photocraft", credit: "ArtCraft Team", license: "MIT OR Apache-2.0" },
+	{ id: "vectorcraft", name: "VectorCraft", category: "apps", icon: "apps/vectorcraft/icon.png", url: "apps/vectorcraft/index.html", website: "https://getartcraft.com/apps/vectorcraft", github: "storytold/vectorcraft", credit: "ArtCraft Team", license: "MIT OR Apache-2.0" },
+	{ id: "filmcraft", name: "FilmCraft", category: "apps", icon: "apps/filmcraft/icon.png", url: "apps/filmcraft/index.html", website: "https://getartcraft.com/apps/filmcraft", github: "storytold/filmcraft", credit: "ArtCraft Team", license: "MIT OR Apache-2.0" },
+	{ id: "lightcraft", name: "LightCraft", category: "apps", icon: "apps/lightcraft/icon.png", url: "apps/lightcraft/index.html", website: "https://getartcraft.com/apps/lightcraft", github: "storytold/lightcraft", credit: "ArtCraft Team", license: "MIT OR Apache-2.0" },
+	{ id: "pdfcraft", name: "PdfCraft", category: "apps", icon: "apps/pdfcraft/icon.png", url: "apps/pdfcraft/index.html", website: "https://getartcraft.com/apps/pdfcraft", github: "storytold/pdfcraft", credit: "ArtCraft Team", license: "MIT OR Apache-2.0" },
+	{ id: "effectcraft", name: "EffectCraft", category: "apps", icon: "apps/effectcraft/icon.png", url: "apps/effectcraft/index.html", website: "https://getartcraft.com/apps/effectcraft", github: "storytold/effectcraft", credit: "ArtCraft Team", license: "MIT OR Apache-2.0" },
+	{ id: "designcraft", name: "DesignCraft", category: "apps", icon: "apps/designcraft/icon.png", url: "apps/designcraft/index.html", website: "https://getartcraft.com/apps/designcraft", github: "storytold/designcraft", credit: "ArtCraft Team", license: "MIT OR Apache-2.0" },
+	{ id: "figcraft", name: "FigCraft", category: "apps", icon: "apps/figcraft/icon.png", url: "apps/figcraft/index.html", website: "https://getartcraft.com/apps/figcraft", github: "storytold/figcraft", credit: "ArtCraft Team", license: "MIT OR Apache-2.0" },
+	{ id: "wordcraft", name: "WordCraft", category: "apps", icon: "apps/wordcraft/icon.png", url: "apps/wordcraft/index.html", website: "https://getartcraft.com/apps/wordcraft", github: "storytold/wordcraft", credit: "ArtCraft Team", license: "MIT OR Apache-2.0" },
+	{ id: "soundcraft", name: "SoundCraft", category: "apps", icon: "apps/soundcraft/icon.png", url: "apps/soundcraft/index.html", website: "https://getartcraft.com/apps/soundcraft", github: "storytold/soundcraft", credit: "ArtCraft Team", license: "MIT OR Apache-2.0" },
+	{ id: "deckcraft", name: "DeckCraft", category: "apps", icon: "apps/deckcraft/icon.png", url: "apps/deckcraft/index.html", website: "https://getartcraft.com/apps/deckcraft", github: "storytold/deckcraft", credit: "ArtCraft Team", license: "MIT OR Apache-2.0" },
+	{ id: "cadcraft", name: "CADCraft", category: "apps", icon: "apps/cadcraft/icon.png", url: "apps/cadcraft/index.html", website: "https://getartcraft.com/apps/cadcraft", github: "storytold/cadcraft", credit: "ArtCraft Team", license: "MIT OR Apache-2.0" },
+	{ id: "gridcraft", name: "GridCraft", category: "apps", icon: "apps/gridcraft/icon.png", url: "apps/gridcraft/index.html", website: "https://getartcraft.com/apps/gridcraft", github: "storytold/gridcraft", credit: "ArtCraft Team", license: "MIT OR Apache-2.0" },
+	{ id: "texturecraft", name: "TextureCraft", category: "apps", icon: "apps/texturecraft/icon.png", url: "apps/texturecraft/index.html", website: "https://getartcraft.com/apps/texturecraft", github: "storytold/texturecraft", credit: "ArtCraft Team", license: "MIT OR Apache-2.0" },
+	{ id: "craft-anything", name: "Craft Anything", category: "apps", icon: "apps/craft-anything/icon.png", url: "apps/craft-anything/index.html", website: "https://getartcraft.com/apps/craft-anything", github: "storytold/craft-anything", credit: "ArtCraft Team", license: "MIT OR Apache-2.0" },
 ];
 
 // BrowStore itself: always in the Start menu, can't be removed
