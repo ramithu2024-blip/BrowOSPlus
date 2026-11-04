@@ -83,10 +83,10 @@ setTimeout(function () {
 	const clearBookmarksBtn = document.getElementById("browserClearBookmarks");
 	const clearDataBtn = document.getElementById("browserClearData");
 
-	if (clearHistoryBtn) clearHistoryBtn.addEventListener("click", () => { B.clearHistory(); alert("History cleared."); });
-	if (clearBookmarksBtn) clearBookmarksBtn.addEventListener("click", () => { B.clearBookmarks(); alert("Bookmarks cleared."); });
-	if (clearDataBtn) clearDataBtn.addEventListener("click", () => {
-		if (confirm("Clear all browser data?")) { B.clearAll(); alert("Browser data cleared."); }
+	if (clearHistoryBtn) clearHistoryBtn.addEventListener("click", () => { B.clearHistory(); showAlert("History cleared."); });
+	if (clearBookmarksBtn) clearBookmarksBtn.addEventListener("click", () => { B.clearBookmarks(); showAlert("Bookmarks cleared."); });
+	if (clearDataBtn) clearDataBtn.addEventListener("click", async () => {
+		if (await showConfirm("Clear all browser data?")) { B.clearAll(); showAlert("Browser data cleared."); }
 	});
 
 	refreshStatus();

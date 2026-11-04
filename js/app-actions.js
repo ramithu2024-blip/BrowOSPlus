@@ -146,14 +146,14 @@ function hasAppData(id) {
 	return Boolean(app && app.dataKeys);
 }
 
-function deleteAppData(id) {
+async function deleteAppData(id) {
 	const app = getApp(id);
 
 	if (!app || !app.dataKeys) {
 		return false;
 	}
 
-	if (!confirm("Delete all saved " + app.name + " data? This can't be undone.")) {
+	if (!await showConfirm("Delete all saved " + app.name + " data? This can't be undone.")) {
 		return false;
 	}
 

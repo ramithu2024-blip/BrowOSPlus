@@ -808,10 +808,10 @@ setTimeout(function () {
 
 	const clearBtn = document.getElementById("browserSelfClearData");
 	if (clearBtn) {
-		clearBtn.addEventListener("click", function () {
-			if (confirm("Clear all browser data?")) {
+		clearBtn.addEventListener("click", async function () {
+			if (await showConfirm("Clear all browser data?")) {
 				B.clearAll();
-				alert("Browser data cleared.");
+				await showAlert("Browser data cleared.");
 			}
 		});
 	}

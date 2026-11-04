@@ -16,6 +16,40 @@ const desktopTextInput = document.getElementById("desktopTextInput");
 
 const desktopTitle = document.getElementById("desktopTitle");
 
+// Auto accent from wallpaper
+
+function autoAccentFromWallpaper(imageSrc) {
+	if (localStorage.getItem("browos-auto-accent") !== "on") return;
+
+	const img = new Image();
+	img.crossOrigin = "anonymous";
+	img.onload = function () {
+		try {
+			const canvas = document.createElement("canvas");
+			const size = 32;
+			canvas.width = size;
+			canvas.height = size;
+			const ctx = canvas.getContext("2d");
+			ctx.drawImage(img, 0, 0, size, size);
+			const data = ctx.getImageData(0, 0, size, size).data;
+			let r = 0, g = 0, b = 0, count = 0;
+			for (let i = 0; i < data.length; i += 4) {
+				r += data[i];
+				g += data[i + 1];
+				b += data[i + 2];
+				count++;
+			}
+			r = Math.round(r / count);
+			g = Math.round(g / count);
+			b = Math.round(b / count);
+			const color = "#" + [r, g, b].map(x => x.toString(16).padStart(2, "0")).join("");
+			setAccent(color);
+			localStorage.setItem("browos-accent", color);
+		} catch (e) {}
+	};
+	img.src = imageSrc;
+}
+
 // Accent color
 
 function setAccent(color) {
@@ -110,6 +144,15 @@ transparencySlider.addEventListener("input", function () {
 
 	updateTransparency();
 });
+
+const autoAccentToggle = document.getElementById("autoAccentToggle");
+if (autoAccentToggle) {
+	autoAccentToggle.checked = localStorage.getItem("browos-auto-accent") !== "off";
+	localStorage.setItem("browos-auto-accent", autoAccentToggle.checked ? "on" : "off");
+	autoAccentToggle.addEventListener("change", function () {
+		localStorage.setItem("browos-auto-accent", autoAccentToggle.checked ? "on" : "off");
+	});
+}
 
 // Desktop text
 

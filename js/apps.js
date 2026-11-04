@@ -136,6 +136,7 @@ renameApp("helium", "browser");
 // Ensure the bundled Craft App Suite is visible in the Start menu
 
 const craftAppIds = [
+	"settings",
 	"photocraft",
 	"vectorcraft",
 	"filmcraft",
@@ -250,7 +251,7 @@ function setIcon(img, app) {
 
 // App windows
 
-const appWindowsParent = document.getElementById("settingsWindow").parentNode;
+const appWindowsParent = settingsWindow.parentNode;
 
 function createAppWindow(app) {
 	const appWindow = document.createElement("div");
@@ -472,6 +473,19 @@ appCatalog.forEach(function (app) {
 // Opening apps
 
 function launchApp(id) {
+	try {
+		if (id === "settings") {
+		const settingsWindow = document.getElementById("settingsWindow");
+
+		if (settingsWindow) {
+			settingsWindow.classList.add("show");
+
+			if (typeof bringToFront === "function") bringToFront(settingsWindow);
+
+			return;
+		}
+	}
+
 	const app = getApp(id);
 
 	// windows that are not apps (like Settings)
@@ -508,6 +522,9 @@ function launchApp(id) {
 	}
 
 	openApp(getAppWindow(app));
+	} catch (e) {
+		console.error("launchApp failed", id, e);
+	}
 }
 
 // Start menu
@@ -525,9 +542,10 @@ const defaultAppsGrid = document.getElementById("defaultAppsGrid");
 const installedAppsGrid = document.getElementById("installedAppsGrid");
 
 function closeStartMenu() {
-	startMenu.classList.remove("show");
-	appsPanel.classList.remove("show");
-	appsMenuItem.classList.remove("active");
+	const sm = document.getElementById("startMenu");
+	if (sm) sm.classList.remove("show");
+	if (appsPanel) appsPanel.classList.remove("show");
+	if (appsMenuItem) appsMenuItem.classList.remove("active");
 }
 
 function renderAppsPanel() {
@@ -618,6 +636,7 @@ document.querySelectorAll(".menu-item[data-window], .menu-item[data-app]").forEa
 });
 
 // Apps panel
+
 
 appsMenuItem.addEventListener("click", function () {
 	appsPanel.classList.toggle("show");

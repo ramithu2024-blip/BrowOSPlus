@@ -9,12 +9,12 @@ startButton.addEventListener("click", function () {
 });
 
 powerButton.addEventListener("click", async function () {
-	if (!confirm("Close this window and all its tabs?")) {
+	if (!await showConfirm("Close this window and all its tabs?")) {
 		return;
 	}
 
 	if (typeof chrome === "undefined" || !chrome.windows) {
-		alert("Close the browser tab manually to exit BrowOS+.");
+		showAlert("Close the browser tab manually to exit BrowOS+.");
 		return;
 	}
 

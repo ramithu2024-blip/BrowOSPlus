@@ -195,6 +195,8 @@
 	width: 40px;
 	height: 40px;
 
+	position: relative;
+
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -215,6 +217,26 @@
 
 .taskbar-app-button.active {
 	background: rgba(255, 255, 255, 0.12);
+}
+
+.taskbar-app-button.active::after {
+	content: "";
+	position: absolute;
+	bottom: 2px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 16px;
+	height: 3px;
+	border-radius: 2px;
+	background: var(--accent);
+}
+
+.taskbar-app-button.focused {
+	background: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.taskbar-app-button.focused::after {
+	display: none;
 }
 
 .taskbar-app-button img {

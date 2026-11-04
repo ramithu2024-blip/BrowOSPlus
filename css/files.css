@@ -1,8 +1,9 @@
 /* Files / Virtual Disk */
 
-.explorer-window {
-	width: 720px;
-	height: 480px;
+.app-window.explorer-window {
+	width: 820px;
+	height: 560px;
+	background: rgba(20, 20, 28, 0.98);
 }
 
 .explorer-content {
@@ -11,27 +12,54 @@
 	min-height: 0;
 }
 
+.sidebar-title {
+	font-size: 11px;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.4);
+	padding: 8px 8px 4px;
+	letter-spacing: 0.5px;
+}
+
 .explorer-sidebar {
-	width: 180px;
-	border-right: 1px solid rgba(var(--soft), 0.12);
-	padding: 8px;
+	width: 200px;
+	border-right: 1px solid rgba(255, 255, 255, 0.08);
+	padding: 12px 8px;
 	overflow: auto;
+	background: rgba(0, 0, 0, 0.18);
 }
 
 .explorer-drive {
-	padding: 8px;
-	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 12px;
+	border-radius: 10px;
 	cursor: pointer;
 	margin-bottom: 4px;
+	transition: background 0.15s ease;
+}
+
+.explorer-drive:hover {
+	background: rgba(255, 255, 255, 0.06);
 }
 
 .explorer-drive.active {
-	background: rgba(var(--soft), 0.12);
+	background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.drive-icon {
+	font-size: 18px;
+}
+
+.drive-name {
+	flex: 1;
+	font-size: 13px;
+	font-weight: 500;
 }
 
 .drive-status {
 	font-size: 10px;
-	color: rgba(var(--soft), 0.5);
+	color: rgba(255, 255, 255, 0.45);
 }
 
 .explorer-main {
@@ -39,35 +67,43 @@
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
+	background: rgba(255, 255, 255, 0.02);
 }
 
 .explorer-toolbar {
 	display: flex;
-	gap: 6px;
-	padding: 8px;
-	border-bottom: 1px solid rgba(var(--soft), 0.12);
+	gap: 8px;
+	padding: 10px 12px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 	flex-wrap: wrap;
+	background: rgba(0, 0, 0, 0.12);
 }
 
 .explorer-btn {
-	padding: 6px 10px;
-	border: none;
-	border-radius: 6px;
-	background: rgba(var(--soft), 0.08);
+	padding: 7px 12px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 8px;
+	background: rgba(255, 255, 255, 0.06);
 	color: var(--text);
 	cursor: pointer;
 	font-size: 12px;
+	font-weight: 500;
+	transition: all 0.15s ease;
 }
 
 .explorer-btn:hover {
-	background: rgba(var(--soft), 0.16);
+	background: var(--accent);
+	border-color: var(--accent);
+	color: #fff;
+	transform: translateY(-1px);
 }
 
 .explorer-breadcrumb {
-	padding: 6px 8px;
+	padding: 8px 12px;
 	font-size: 12px;
-	color: rgba(var(--soft), 0.6);
-	border-bottom: 1px solid rgba(var(--soft), 0.08);
+	color: rgba(255, 255, 255, 0.55);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+	background: rgba(0, 0, 0, 0.08);
 }
 
 .explorer-files {
@@ -85,36 +121,44 @@
 .file-row {
 	display: flex;
 	align-items: center;
-	gap: 8px;
-	padding: 6px 8px;
-	border-radius: 6px;
+	gap: 10px;
+	padding: 8px 10px;
+	border-radius: 8px;
 	cursor: pointer;
+	transition: background 0.12s ease;
 }
 
 .file-row:hover {
-	background: rgba(var(--soft), 0.06);
+	background: rgba(255, 255, 255, 0.05);
 }
 
 .file-row.selected {
-	background: rgba(var(--soft), 0.16);
+	background: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 .file-icon {
-	width: 20px;
+	width: 24px;
+	text-align: center;
+	font-size: 16px;
 }
 
 .file-name {
 	flex: 1;
+	font-size: 13px;
 }
 
 .file-size {
 	font-size: 11px;
-	color: rgba(var(--soft), 0.5);
+	color: rgba(255, 255, 255, 0.45);
+	min-width: 60px;
+	text-align: right;
 }
 
 .empty-folder {
-	color: rgba(var(--soft), 0.5);
-	padding: 16px;
+	color: rgba(255, 255, 255, 0.45);
+	padding: 24px;
+	text-align: center;
+	font-size: 13px;
 }
 
 .mount-screen {
@@ -128,11 +172,63 @@
 	padding: 24px;
 }
 
+.mount-screen h3 {
+	margin: 0;
+}
+
+.mount-screen p {
+	color: rgba(255, 255, 255, 0.6);
+	max-width: 360px;
+}
+
 .mount-screen button {
-	padding: 8px 14px;
+	padding: 9px 16px;
 	border: none;
-	border-radius: 8px;
+	border-radius: 10px;
 	background: var(--accent);
 	color: #fff;
 	cursor: pointer;
+	font-weight: 600;
+}
+
+.confirm-overlay {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.45);
+	z-index: 200;
+}
+
+.confirm-box {
+	background: rgba(30, 30, 36, 0.98);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 12px;
+	padding: 20px;
+	max-width: 320px;
+	text-align: center;
+}
+
+.confirm-box p {
+	margin: 0 0 16px;
+}
+
+.confirm-actions {
+	display: flex;
+	gap: 8px;
+	justify-content: center;
+}
+
+.confirm-actions button {
+	padding: 8px 14px;
+	border: none;
+	border-radius: 8px;
+	background: rgba(255, 255, 255, 0.1);
+	color: #fff;
+	cursor: pointer;
+}
+
+.confirm-yes {
+	background: #c42b1c !important;
 }

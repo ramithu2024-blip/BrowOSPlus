@@ -44,10 +44,10 @@
 			<span>›</span>
 		</div>
 
-		<div class="menu-item" data-app="browstore">BrowStore</div>
-		<div class="menu-item" data-window="explorerWindow">Files</div>
-		<div class="menu-item" data-app="taskmanager">Task Manager</div>
-		<div class="menu-item" data-window="settingsWindow">Settings</div>
+		<div class="menu-item" data-app="browstore" onclick="document.getElementById('startMenu').classList.remove('show'); launchApp('browstore');">BrowStore</div>
+		<div class="menu-item" data-window="explorerWindow" onclick="document.getElementById('startMenu').classList.remove('show'); var w=document.getElementById('explorerWindow'); w.classList.add('show'); if (typeof bringToFront==='function') bringToFront(w);">Files</div>
+		<div class="menu-item" data-app="taskmanager" onclick="document.getElementById('startMenu').classList.remove('show'); launchApp('taskmanager');">Task Manager</div>
+		<div class="menu-item" data-window="settingsWindow" onclick="document.getElementById('startMenu').classList.remove('show'); var w=document.getElementById('settingsWindow'); w.classList.add('show'); if (typeof bringToFront==='function') bringToFront(w);">Settings</div>
 		<div class="menu-item power" id="powerButton">Turn off</div>
 	</div>
 
@@ -249,6 +249,7 @@
 				<div class="settings-nav active" data-page="personalizationPage">Personalization</div>
 				<div class="settings-nav" data-page="startupPage">Startup</div>
 				<div class="settings-nav" data-page="taskbarPage">Taskbar</div>
+				<div class="settings-nav" data-page="widgetsPage">Widgets</div>
 				<div class="settings-nav" data-page="browserPage">Browser</div>
 				<div class="settings-nav" data-page="aboutPage">About & Credits</div>
 			</div>
@@ -286,6 +287,15 @@
 						<button class="accent-option" data-color="#00bcd4" style="background: #00bcd4"></button>
 					</div>
 
+					<div class="setting-row">
+						<span>Auto accent from wallpaper</span>
+
+						<label class="switch">
+							<input type="checkbox" id="autoAccentToggle">
+							<span class="slider"></span>
+						</label>
+					</div>
+
 					<h3>Windows</h3>
 
 					<div class="setting-row">
@@ -320,6 +330,13 @@
 						<input type="range" id="transparencySlider" min="0" max="100">
 					</div>
 
+					<h3>User</h3>
+
+					<div class="setting-row">
+						<span>User name</span>
+						<input type="text" id="userNameInput" maxlength="32" placeholder="User">
+					</div>
+
 					<h3>Desktop text</h3>
 
 					<div class="setting-row">
@@ -351,6 +368,16 @@
 					<div class="setting-row">
 						<span>Cursor size</span>
 						<input type="range" id="cursorSizeSlider" min="16" max="64">
+					</div>
+
+					<div class="setting-row">
+						<span>Start menu logo (PNG)</span>
+
+						<label class="upload-button">
+							Upload logo
+
+							<input type="file" accept="image/*" id="startLogoUpload" hidden>
+						</label>
 					</div>
 
 					<div class="setting-row">
@@ -517,6 +544,62 @@
 					</p>
 				</div>
 
+				<!-- Widgets -->
+				<div class="settings-page" id="widgetsPage">
+					<h2>Widgets</h2>
+
+					<div class="setting-row">
+						<span>Show desktop widgets</span>
+						<label class="switch">
+							<input type="checkbox" id="widgetsEnabledToggle">
+							<span class="slider"></span>
+						</label>
+					</div>
+
+					<div class="setting-row">
+						<span>Clock widget</span>
+						<label class="switch">
+							<input type="checkbox" id="widgetClockToggle">
+							<span class="slider"></span>
+						</label>
+					</div>
+
+					<div class="setting-row">
+						<span>Weather widget</span>
+						<label class="switch">
+							<input type="checkbox" id="widgetWeatherToggle">
+							<span class="slider"></span>
+						</label>
+					</div>
+
+					<div class="setting-row">
+						<span>Timezone widget</span>
+						<label class="switch">
+							<input type="checkbox" id="widgetTzToggle">
+							<span class="slider"></span>
+						</label>
+					</div>
+
+					<div class="setting-row">
+						<span>Clock color</span>
+						<input type="color" id="widgetClockColor">
+					</div>
+
+					<div class="setting-row">
+						<span>Weather color</span>
+						<input type="color" id="widgetWeatherColor">
+					</div>
+
+					<div class="setting-row">
+						<span>Timezone clock color</span>
+						<input type="color" id="widgetTzColor">
+					</div>
+
+					<div class="setting-row">
+						<button class="setting-button" id="resetWidgetsButton">Reset widgets</button>
+					</div>
+				</div>
+
 				<!-- About & Credits -->
 				<div class="settings-page" id="aboutPage">
 					<h2>About & Credits</h2>
@@ -540,6 +623,8 @@
 					</ul>
 
 					<button class="reset-button" id="resetSettingsButton">Reset settings</button>
+
+					<button class="reset-button" id="clearAllDataButton">Clear all BrowOS+ data</button>
 				</div>
 
 				<!-- Credits -->
@@ -791,10 +876,17 @@
 	</div>
 
 	<!-- Explorer -->
-	<div class="explorer-window" id="explorerWindow">
-		<div class="explorer-header">
-			<h3>Files</h3>
-			<button class="close-explorer" id="closeExplorer">×</button>
+	<div class="app-window explorer-window" id="explorerWindow" data-app-id="files" data-app-name="Files" data-app-icon="icons/explorer-icon.png">
+		<div class="window-header">
+			<div class="window-title">
+				<img src="icons/explorer-icon.png">
+				<span>Files</span>
+			</div>
+
+			<div class="window-controls">
+				<button class="window-minimize">—</button>
+				<button class="window-close">×</button>
+			</div>
 		</div>
 
 		<div class="explorer-content">
@@ -867,6 +959,7 @@
 <script src="js/desktop-icons.js"></script>
 <script src="js/windows.js"></script>
 <script src="js/taskbar.js"></script>
+<script src="js/dialog.js"></script>
 <script src="js/settings.js"></script>
 <script src="js/browser-settings.js"></script>
 <script src="js/clock-app.js"></script>
@@ -883,6 +976,7 @@
 <script src="js/floating-windows.js"></script>
 <script src="js/desktop-menu.js"></script>
 <script src="js/main.js"></script>
+<script src="js/widgets.js"></script>
 <script src="js/browstore.js"></script>
 <script src="js/task-manager.js"></script>
 <script src="js/update.js"></script>

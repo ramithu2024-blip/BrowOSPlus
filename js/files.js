@@ -95,6 +95,30 @@ class OSDAdapter {
 		if (!root) {
 			await idbPut("entries", { path: "/", name: "", type: "dir", parent: null, size: 0, modified: Date.now() });
 		}
+		const username = (localStorage.getItem("browos-username") || "User").trim() || "User";
+		// Windows-like structure
+		const systemFolders = ["Users", "System", "Program Files", "ProgramData"];
+		for (const name of systemFolders) {
+			const path = "/" + name;
+			const existing = await idbGet("entries", path);
+			if (!existing) {
+				await idbPut("entries", { path, name, type: "dir", parent: "/", size: 0, modified: Date.now() });
+			}
+		}
+		const userRoot = "/Users/" + username;
+		const userFolders = ["Desktop", "Documents", "Downloads", "Music", "Pictures", "Videos", "Trash", ".userdata"];
+		// ensure Users/<username>
+		let userEntry = await idbGet("entries", userRoot);
+		if (!userEntry) {
+			await idbPut("entries", { path: userRoot, name: username, type: "dir", parent: "/Users", size: 0, modified: Date.now() });
+		}
+		for (const name of userFolders) {
+			const path = userRoot + "/" + name;
+			const existing = await idbGet("entries", path);
+			if (!existing) {
+				await idbPut("entries", { path, name, type: "dir", parent: userRoot, size: 0, modified: Date.now(), hidden: name.startsWith(".") });
+			}
+		}
 	}
 
 	async list(path) {
@@ -114,7 +138,7 @@ class OSDAdapter {
 		return e.content;
 	}
 
-	async write(path, data) {
+	async write(path, data, mimeType) {
 		const parent = dirname(path);
 		await idbPut("entries", {
 			path,
@@ -122,6 +146,7 @@ class OSDAdapter {
 			type: "file",
 			parent,
 			content: data,
+			mimeType: mimeType || "application/octet-stream",
 			size: data && data.byteLength ? data.byteLength : (data && data.size ? data.size : 0),
 			modified: Date.now(),
 		});
@@ -374,6 +399,29 @@ class ComputerAdapter {
 		this.currentHandle = this.rootHandle;
 		this.currentPath = "/";
 	}
+
+	async copy(srcName, destName) {
+		if (!this.currentHandle) throw new Error("Not mounted");
+		let srcHandle;
+		try { srcHandle = await this.currentHandle.getDirectoryHandle(srcName); }
+		catch (e) { srcHandle = await this.currentHandle.getFileHandle(srcName); }
+		if (srcHandle.kind === "file") {
+			const file = await srcHandle.getFile();
+			const buf = await file.arrayBuffer();
+			const fh = await this.currentHandle.getFileHandle(destName, { create: true });
+			const w = await fh.createWritable();
+			await w.write(buf);
+			await w.close();
+		} else {
+			const destDir = await this.currentHandle.getDirectoryHandle(destName, { create: true });
+			await copyDir(srcHandle, destDir);
+		}
+	}
+
+	async move(srcName, destName) {
+		await this.copy(srcName, destName);
+		await this.remove(srcName);
+	}
 }
 
 async function copyDir(srcDir, destDir) {
@@ -398,14 +446,38 @@ const computerAdapter = new ComputerAdapter();
 
 const drives = [osdAdapter, computerAdapter];
 
+const defaultDrivePresentation = {
+	osd: { name: "OSD (C:)", icon: "💾", color: "" },
+	computer: { name: "My Computer", icon: "💻", color: "" },
+};
+
+function applyDriveTheme() {
+	let theme = {};
+	try {
+		theme = JSON.parse(localStorage.getItem("browos-drive-theme") || "{}");
+	} catch (e) {
+		theme = {};
+	}
+	drives.forEach(drive => {
+		const t = (theme && theme[drive.id]) || {};
+		const def = defaultDrivePresentation[drive.id] || {};
+		drive.label = (typeof t.name === "string" && t.name.trim()) ? t.name.trim() : (def.name || drive.name);
+		drive.icon = (typeof t.icon === "string" && t.icon.trim()) ? t.icon.trim() : (def.icon || drive.icon);
+		drive.color = (typeof t.color === "string") ? t.color : (def.color || "");
+	});
+}
+
 // ---------- Files UI State ----------
 let currentDrive = osdAdapter;
 let currentPath = "/";
-let selectedEntry = null;
+let selectedEntries = [];
+let currentEntries = [];
+let showHiddenFiles = localStorage.getItem("browos-show-hidden") === "on";
 
 async function initFiles() {
 	await osdAdapter.init();
 	await computerAdapter.init();
+	applyDriveTheme();
 	renderSidebar();
 	await navigateTo(currentDrive, "/");
 }
@@ -413,6 +485,43 @@ async function initFiles() {
 function renderSidebar() {
 	if (!explorerSidebar) return;
 	explorerSidebar.innerHTML = "";
+
+	// Quick access (OSD folders) first
+	if (currentDrive === osdAdapter) {
+		const qaTitle = document.createElement("div");
+		qaTitle.className = "sidebar-title";
+		qaTitle.textContent = "Quick access";
+		explorerSidebar.appendChild(qaTitle);
+
+		const username = (localStorage.getItem("browos-username") || "User").trim() || "User";
+		const home = "/Users/" + username;
+		const quickFolders = [
+			{ name: "Home", path: home, icon: "🏠" },
+			{ name: "Desktop", path: home + "/Desktop", icon: "🖥️" },
+			{ name: "Documents", path: home + "/Documents", icon: "📄" },
+			{ name: "Downloads", path: home + "/Downloads", icon: "⬇️" },
+			{ name: "Music", path: home + "/Music", icon: "🎵" },
+			{ name: "Pictures", path: home + "/Pictures", icon: "🖼️" },
+			{ name: "Videos", path: home + "/Videos", icon: "🎬" },
+			{ name: "Trash", path: home + "/Trash", icon: "🗑️" },
+		];
+		quickFolders.forEach(qf => {
+			const item = document.createElement("div");
+			item.className = "explorer-drive";
+			item.innerHTML = `<span class="drive-icon">${qf.icon}</span> <span class="drive-name">${qf.name}</span>`;
+			item.addEventListener("click", () => {
+				navigateTo(osdAdapter, qf.path);
+			});
+			explorerSidebar.appendChild(item);
+		});
+	}
+
+	// Drives
+	const drivesTitle = document.createElement("div");
+	drivesTitle.className = "sidebar-title";
+	drivesTitle.textContent = "Drives";
+	explorerSidebar.appendChild(drivesTitle);
+
 	drives.forEach(drive => {
 		const item = document.createElement("div");
 		item.className = "explorer-drive" + (drive === currentDrive ? " active" : "");
@@ -450,7 +559,7 @@ function showMountScreen() {
 				await navigateTo(computerAdapter, "/");
 				renderSidebar();
 			} catch (e) {
-				alert("Mount failed: " + e.message);
+				await showAlert("Mount failed: " + e.message);
 			}
 		});
 	}
@@ -463,10 +572,10 @@ function showMountScreen() {
 					await navigateTo(computerAdapter, "/");
 					renderSidebar();
 				} else {
-					alert("Permission not granted");
+					await showAlert("Permission not granted");
 				}
 			} catch (e) {
-				alert("Permission request failed: " + e.message);
+				await showAlert("Permission request failed: " + e.message);
 			}
 		});
 	}
@@ -481,15 +590,19 @@ async function navigateTo(drive, path) {
 			renderSidebar();
 			return;
 		}
-		if (path === "/") {
-			await drive.cdRoot();
-		} else {
-			// navigate step by step
-			const parts = path.split("/").filter(Boolean);
-			await drive.cdRoot();
-			for (const part of parts) {
-				await drive.navigateInto(part);
+		try {
+			if (path === "/") {
+				await drive.cdRoot();
+			} else {
+				const parts = path.split("/").filter(Boolean);
+				await drive.cdRoot();
+				for (const part of parts) {
+					await drive.navigateInto(part);
+				}
 			}
+		} catch (e) {
+			explorerFiles.textContent = "Error: " + e.message;
+			return;
 		}
 	}
 	renderSidebar();
@@ -504,6 +617,9 @@ async function renderFiles() {
 	let entries = [];
 	try {
 		entries = await currentDrive.list(currentPath);
+		if (currentDrive === osdAdapter && !showHiddenFiles) {
+			entries = entries.filter(e => !e.name.startsWith("."));
+		}
 	} catch (e) {
 		explorerFiles.textContent = "Error: " + e.message;
 		return;
@@ -516,6 +632,7 @@ async function renderFiles() {
 		if (a.type !== b.type) return a.type === "dir" ? -1 : 1;
 		return a.name.localeCompare(b.name);
 	});
+	currentEntries = entries;
 	const list = document.createElement("div");
 	list.className = "file-list";
 	entries.forEach(entry => {
@@ -530,14 +647,30 @@ async function renderFiles() {
 				openFile(entry);
 			}
 		});
-		row.addEventListener("click", () => {
-			selectedEntry = entry;
-			document.querySelectorAll(".file-row").forEach(r => r.classList.remove("selected"));
-			row.classList.add("selected");
+		row.addEventListener("click", (e) => {
+			if (e.ctrlKey || e.metaKey) {
+				if (selectedEntries.includes(entry)) {
+					selectedEntries = selectedEntries.filter(x => x !== entry);
+					row.classList.remove("selected");
+				} else {
+					selectedEntries.push(entry);
+					row.classList.add("selected");
+				}
+			} else {
+				selectedEntries = [entry];
+				document.querySelectorAll(".file-row").forEach(r => r.classList.remove("selected"));
+				row.classList.add("selected");
+			}
 		});
 		list.appendChild(row);
 	});
 	explorerFiles.appendChild(list);
+}
+
+function isProtectedPath(path) {
+	const username = (localStorage.getItem("browos-username") || "User").trim() || "User";
+	const protectedPaths = ["/", "/Users", "/System", "/Program Files", "/ProgramData", "/Users/" + username, "/Users/" + username + "/Trash"];
+	return protectedPaths.includes(path);
 }
 
 function formatSize(bytes) {
@@ -553,6 +686,7 @@ function renderToolbar() {
 		{ label: "New Folder", action: newFolder },
 		{ label: "Upload", action: uploadFile },
 		{ label: "Download", action: downloadSelected },
+		{ label: "Duplicate", action: duplicateSelected },
 		{ label: "Rename", action: renameSelected },
 		{ label: "Delete", action: deleteSelected },
 	];
@@ -574,10 +708,15 @@ function renderBreadcrumb() {
 }
 
 async function newFolder() {
-	const name = prompt("Folder name:");
+	const name = await showPrompt("Folder name:");
 	if (!name) return;
-	const path = currentPath === "/" ? "/" + name : currentPath + "/" + name;
 	try {
+		const existing = await currentDrive.list(currentPath);
+		if (existing.some(e => e.name === name)) {
+			await showAlert("An item with that name already exists.");
+			return;
+		}
+		const path = currentPath === "/" ? "/" + name : currentPath + "/" + name;
 		if (currentDrive === computerAdapter) {
 			await currentDrive.mkdir(name);
 		} else {
@@ -585,7 +724,7 @@ async function newFolder() {
 		}
 		await renderFiles();
 	} catch (e) {
-		alert("Failed: " + e.message);
+		await showAlert("Failed: " + e.message);
 	}
 }
 
@@ -598,13 +737,17 @@ async function uploadFile() {
 			const path = currentPath === "/" ? "/" + file.name : currentPath + "/" + file.name;
 			const buf = await file.arrayBuffer();
 			try {
+				const existing = await currentDrive.list(currentPath);
+				if (existing.some(e => e.name === file.name)) {
+					if (!await showConfirm("Overwrite " + file.name + "?")) continue;
+				}
 				if (currentDrive === computerAdapter) {
 					await currentDrive.write(path, buf, file.name);
 				} else {
-					await currentDrive.write(path, buf);
+					await currentDrive.write(path, buf, file.type);
 				}
 			} catch (e) {
-				alert("Upload failed: " + e.message);
+				await showAlert("Upload failed: " + e.message);
 			}
 		}
 		await renderFiles();
@@ -613,67 +756,137 @@ async function uploadFile() {
 }
 
 async function downloadSelected() {
-	if (!selectedEntry || selectedEntry.type !== "file") {
-		alert("Select a file first");
+	const entry = selectedEntries.find(e => e.type === "file");
+	if (!entry) {
+		await showAlert("Select a file first");
 		return;
 	}
 	try {
 		let buf;
 		if (currentDrive === computerAdapter) {
-			buf = await currentDrive.readFileByName(selectedEntry.name);
+			buf = await currentDrive.readFileByName(entry.name);
 		} else {
-			buf = await currentDrive.read(selectedEntry.path);
+			buf = await currentDrive.read(entry.path);
 		}
 		const blob = new Blob([buf]);
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement("a");
 		a.href = url;
-		a.download = selectedEntry.name;
+		a.download = entry.name;
 		a.click();
 		URL.revokeObjectURL(url);
 	} catch (e) {
-		alert("Download failed: " + e.message);
+		await showAlert("Download failed: " + e.message);
 	}
 }
 
 async function renameSelected() {
-	if (!selectedEntry) {
-		alert("Select an item first");
+	const entry = selectedEntries[0];
+	if (!entry || selectedEntries.length !== 1) {
+		await showAlert("Select a single item first");
 		return;
 	}
-	const newName = prompt("New name:", selectedEntry.name);
-	if (!newName || newName === selectedEntry.name) return;
+	const newName = await showPrompt("New name:", entry.name);
+	if (!newName || newName === entry.name) return;
+	if (isProtectedPath(entry.path)) {
+		await showAlert("Operation not permitted");
+		return;
+	}
 	try {
 		if (currentDrive === computerAdapter) {
-			await currentDrive.rename(selectedEntry.name, newName);
+			await currentDrive.rename(entry.name, newName);
 		} else {
 			const newPath = (currentPath === "/" ? "/" : currentPath + "/") + newName;
-			// remove if exists
-			await currentDrive.rename(selectedEntry.path, newPath);
+			await currentDrive.rename(entry.path, newPath);
 		}
-		selectedEntry = null;
+		selectedEntries = [];
 		await renderFiles();
 	} catch (e) {
-		alert("Rename failed: " + e.message);
+		await showAlert("Rename failed: " + e.message);
 	}
 }
 
-async function deleteSelected() {
-	if (!selectedEntry) {
-		alert("Select an item first");
+async function duplicateSelected() {
+	const entry = selectedEntries[0];
+	if (!entry || selectedEntries.length !== 1) {
+		await showAlert("Select a single item first");
 		return;
 	}
-	if (!confirm("Delete " + selectedEntry.name + "?")) return;
 	try {
-		if (currentDrive === computerAdapter) {
-			await currentDrive.remove(selectedEntry.name);
-		} else {
-			await currentDrive.remove(selectedEntry.path);
+		let baseName = entry.name;
+		let newName = baseName.includes(".") ? baseName.replace(/(\.[^.]+)$/, " (copy)$1") : baseName + " (copy)";
+		// avoid conflict
+		const existing = await currentDrive.list(currentPath);
+		const names = new Set(existing.map(e => e.name));
+		let counter = 2;
+		while (names.has(newName)) {
+			newName = baseName.includes(".") ? baseName.replace(/(\.[^.]+)$/, " (copy " + counter + ")$1") : baseName + " (copy " + counter + ")";
+			counter++;
 		}
-		selectedEntry = null;
+		if (currentDrive === computerAdapter) {
+			await currentDrive.copy(entry.name, newName);
+		} else {
+			const srcPath = entry.path;
+			const destPath = (currentPath === "/" ? "/" : currentPath + "/") + newName;
+			await currentDrive.copy(srcPath, destPath);
+		}
 		await renderFiles();
 	} catch (e) {
-		alert("Delete failed: " + e.message);
+		await showAlert("Duplicate failed: " + e.message);
+	}
+}
+
+function confirmDialog(message) {
+	return new Promise(resolve => {
+		const overlay = document.createElement("div");
+		overlay.className = "confirm-overlay";
+		overlay.innerHTML = `<div class="confirm-box"><p>${message}</p><div class="confirm-actions"><button class="confirm-yes">Delete</button><button class="confirm-no">Cancel</button></div></div>`;
+		explorerWindow.appendChild(overlay);
+		overlay.querySelector(".confirm-yes").addEventListener("click", () => { overlay.remove(); resolve(true); });
+		overlay.querySelector(".confirm-no").addEventListener("click", () => { overlay.remove(); resolve(false); });
+	});
+}
+
+async function deleteSelected() {
+	if (selectedEntries.length === 0) {
+		await showAlert("Select an item first");
+		return;
+	}
+	if (selectedEntries.some(e => isProtectedPath(e.path))) {
+		await showAlert("Operation not permitted");
+		return;
+	}
+	if (!await confirmDialog("Delete " + selectedEntries.length + " item(s)?")) return;
+	try {
+		for (const entry of selectedEntries) {
+			if (currentDrive === computerAdapter) {
+				await currentDrive.remove(entry.name);
+			} else {
+				// Move to Trash unless already in Trash
+				const username = (localStorage.getItem("browos-username") || "User").trim() || "User";
+				const trashRoot = "/Users/" + username + "/Trash";
+				if (currentPath.startsWith(trashRoot)) {
+					await currentDrive.remove(entry.path);
+				} else {
+					const username = (localStorage.getItem("browos-username") || "User").trim() || "User";
+					const trashRoot = "/Users/" + username + "/Trash";
+					const trashPath = trashRoot + "/" + entry.name;
+					const existing = await currentDrive.list(trashRoot);
+					const names = new Set(existing.map(e => e.name));
+					let dest = trashPath;
+					if (names.has(entry.name)) {
+						const ext = entry.name.includes(".") ? entry.name.slice(entry.name.lastIndexOf(".")) : "";
+						const base = ext ? entry.name.slice(0, -ext.length) : entry.name;
+						dest = trashRoot + "/" + base + " (2)" + ext;
+					}
+					await currentDrive.move(entry.path, dest);
+				}
+			}
+		}
+		selectedEntries = [];
+		await renderFiles();
+	} catch (e) {
+		await showAlert("Delete failed: " + e.message);
 	}
 }
 
@@ -695,14 +908,12 @@ async function openFile(entry) {
 		const url = URL.createObjectURL(blob);
 		window.open(url, "_blank");
 	} catch (e) {
-		alert("Open failed: " + e.message);
+		await showAlert("Open failed: " + e.message);
 	}
 }
 
 // Window manager integration
 const explorerButton = document.getElementById("explorerButton");
-const closeExplorer = document.getElementById("closeExplorer");
-const explorerHeader = document.querySelector(".explorer-header");
 
 if (explorerButton) {
 	explorerButton.addEventListener("click", function () {
@@ -714,47 +925,23 @@ if (explorerButton) {
 	});
 }
 
-if (closeExplorer) {
-	closeExplorer.addEventListener("click", function () {
-		explorerWindow.classList.remove("show");
-	});
-}
+// Window manager handles open/close/drag for the app window.
 
-if (explorerWindow) {
-	explorerWindow.addEventListener("pointerdown", function () {
-		if (typeof bringToFront === "function") bringToFront(explorerWindow);
-	});
-}
-
-// Dragging
-let isDraggingExplorer = false;
-let offX = 0;
-let offY = 0;
-
-if (explorerHeader) {
-	explorerHeader.addEventListener("pointerdown", function (event) {
-		if (event.target.closest(".close-explorer")) return;
-		isDraggingExplorer = true;
-		const rect = explorerWindow.getBoundingClientRect();
-		offX = event.clientX - rect.left;
-		offY = event.clientY - rect.top;
-		explorerWindow.style.transform = "none";
-		explorerWindow.style.left = rect.left + "px";
-		explorerWindow.style.top = rect.top + "px";
-		explorerHeader.setPointerCapture(event.pointerId);
-	});
-
-	explorerHeader.addEventListener("pointermove", function (event) {
-		if (!isDraggingExplorer) return;
-		explorerWindow.style.left = event.clientX - offX + "px";
-		explorerWindow.style.top = Math.max(0, event.clientY - offY) + "px";
-	});
-
-	explorerHeader.addEventListener("pointerup", function (event) {
-		isDraggingExplorer = false;
-		try { explorerHeader.releasePointerCapture(event.pointerId); } catch (e) {}
-	});
-}
+// Ctrl+H toggles hidden files
+document.addEventListener("keydown", function (e) {
+	if (!explorerWindow || !explorerWindow.classList.contains("show")) return;
+	if (e.ctrlKey && (e.key === "h" || e.key === "H")) {
+		e.preventDefault();
+		showHiddenFiles = !showHiddenFiles;
+		localStorage.setItem("browos-show-hidden", showHiddenFiles ? "on" : "off");
+		renderFiles();
+	}
+	if (e.ctrlKey && (e.key === "a" || e.key === "A")) {
+		e.preventDefault();
+		selectedEntries = [...currentEntries];
+		document.querySelectorAll(".file-row").forEach(r => r.classList.add("selected"));
+	}
+});
 
 // Auto-init on load
 setTimeout(initFiles, 0);

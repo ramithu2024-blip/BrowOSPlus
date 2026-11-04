@@ -123,7 +123,7 @@ function updateTimer() {
 			startupSound.currentTime = 0;
 			startupSound.play().catch(() => {});
 
-			alert("Time's up!");
+			showAlert("Time's up!");
 
 			timerLeft = Number(timerMinutes.value) * 60000;
 		}

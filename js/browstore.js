@@ -1021,8 +1021,8 @@ function makeDetailsMenu(app) {
 	if (!app.discover && isInstalled(app.id) && hasAppData(app.id)) {
 		addItem(
 			"Delete app data",
-			function () {
-				if (deleteAppData(app.id)) {
+			async function () {
+				if (await deleteAppData(app.id)) {
 					showToast(app.name + " data deleted");
 				}
 			},

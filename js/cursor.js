@@ -69,7 +69,7 @@ cursorUpload.addEventListener("change", function () {
 		try {
 			localStorage.setItem("browos-custom-cursor", reader.result);
 		} catch (error) {
-			alert("This cursor image is too big, try a smaller one.");
+			showAlert("This cursor image is too big, try a smaller one.");
 
 			return;
 		}

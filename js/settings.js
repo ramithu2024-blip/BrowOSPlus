@@ -50,6 +50,10 @@ function setWallpaper(image) {
 			option.classList.add("selected");
 		}
 	});
+
+	if (typeof autoAccentFromWallpaper === "function") {
+		autoAccentFromWallpaper(image);
+	}
 }
 
 const savedWallpaper = localStorage.getItem("wallpaper") || "wallpapers/wallpaper.jpg";
@@ -87,7 +91,7 @@ wallpaperUpload.addEventListener("change", function () {
 
 			localStorage.setItem("wallpaper", "custom");
 		} catch (error) {
-			alert("This image is too big, try a smaller one.");
+			showAlert("This image is too big, try a smaller one.");
 
 			return;
 		}
@@ -180,12 +184,72 @@ clockToggle.addEventListener("change", function () {
 	updateClockVisibility();
 });
 
+// Start logo upload
+
+const startLogoUpload = document.getElementById("startLogoUpload");
+
+if (startLogoUpload) {
+	startLogoUpload.addEventListener("change", function () {
+		const file = startLogoUpload.files[0];
+
+		if (!file) return;
+
+		const reader = new FileReader();
+
+		reader.onload = function () {
+			try {
+				localStorage.setItem("browos-start-logo", reader.result);
+			} catch (e) {
+				showAlert("This image is too big, try a smaller one.");
+
+				return;
+			}
+
+			const startButtonImg = document.querySelector("#startButton img");
+
+			if (startButtonImg) startButtonImg.src = reader.result;
+		};
+
+		reader.readAsDataURL(file);
+	});
+}
+
+const savedStartLogo = localStorage.getItem("browos-start-logo");
+
+if (savedStartLogo) {
+	const startButtonImg = document.querySelector("#startButton img");
+
+	if (startButtonImg) startButtonImg.src = savedStartLogo;
+}
+
 // Reset settings
+
+const clearAllDataButton = document.getElementById("clearAllDataButton");
+
+if (clearAllDataButton) {
+	clearAllDataButton.addEventListener("click", async function () {
+		if (!await showConfirm("Clear ALL BrowOS+ data? This cannot be undone.")) return;
+
+		try {
+			localStorage.clear();
+		} catch (e) {}
+
+		try {
+			const dbs = await indexedDB.databases();
+			for (const db of dbs) {
+				if (db.name) indexedDB.deleteDatabase(db.name);
+			}
+		} catch (e) {}
+
+		showAlert("All data cleared. Reloading.");
+		location.reload();
+	});
+}
 
 const resetSettingsButton = document.getElementById("resetSettingsButton");
 
-resetSettingsButton.addEventListener("click", function () {
-	if (!confirm("Reset all settings?")) {
+resetSettingsButton.addEventListener("click", async function () {
+	if (!await showConfirm("Reset all settings?")) {
 		return;
 	}
 
@@ -214,7 +278,78 @@ resetSettingsButton.addEventListener("click", function () {
 // About: the real version, so users can see if they're up to date
 
 try {
+	const userNameInput = document.getElementById("userNameInput");
+if (userNameInput) {
+	userNameInput.value = localStorage.getItem("browos-username") || "User";
+	userNameInput.addEventListener("change", function () {
+		localStorage.setItem("browos-username", userNameInput.value.trim() || "User");
+	});
+}
+
+const widgetsEnabledToggle = document.getElementById("widgetsEnabledToggle");
+const widgetClockColor = document.getElementById("widgetClockColor");
+const widgetWeatherColor = document.getElementById("widgetWeatherColor");
+const widgetTzColor = document.getElementById("widgetTzColor");
+const resetWidgetsButton = document.getElementById("resetWidgetsButton");
+
+if (widgetsEnabledToggle) {
+	widgetsEnabledToggle.checked = localStorage.getItem("browos-widgets-enabled") !== "off";
+	widgetsEnabledToggle.addEventListener("change", function () {
+		localStorage.setItem("browos-widgets-enabled", widgetsEnabledToggle.checked ? "on" : "off");
+		if (typeof applyWidgetsVisibility === "function") applyWidgetsVisibility();
+	});
+}
+
+function widgetToggle(id, key, el, selector) {
+	if (!el) return;
+	el.checked = localStorage.getItem(key) !== "off";
+	el.addEventListener("change", function () {
+		localStorage.setItem(key, el.checked ? "on" : "off");
+		const w = document.querySelector(selector);
+		if (w) w.style.display = el.checked ? "" : "none";
+		if (typeof applyWidgetsVisibility === "function") applyWidgetsVisibility();
+	});
+}
+widgetToggle("clock", "browos-widget-clock-enabled", document.getElementById("widgetClockToggle"), ".clock-widget");
+widgetToggle("weather", "browos-widget-weather-enabled", document.getElementById("widgetWeatherToggle"), ".weather-widget");
+widgetToggle("tz", "browos-widget-tz-enabled", document.getElementById("widgetTzToggle"), ".tz-widget");
+widgetToggle("clock", "browos-widget-clock-enabled", document.getElementById("widgetClockToggle"));
+widgetToggle("weather", "browos-widget-weather-enabled", document.getElementById("widgetWeatherToggle"));
+widgetToggle("tz", "browos-widget-tz-enabled", document.getElementById("widgetTzToggle"));
+if (widgetClockColor) {
+	widgetClockColor.value = localStorage.getItem("browos-widget-clock-color") || "#ffffff";
+	widgetClockColor.addEventListener("change", function () {
+		localStorage.setItem("browos-widget-clock-color", widgetClockColor.value);
+	});
+}
+if (widgetWeatherColor) {
+	widgetWeatherColor.value = localStorage.getItem("browos-widget-weather-color") || "#ffffff";
+	widgetWeatherColor.addEventListener("change", function () {
+		localStorage.setItem("browos-widget-weather-color", widgetWeatherColor.value);
+	});
+}
+if (widgetTzColor) {
+	widgetTzColor.value = localStorage.getItem("browos-widget-tz-color") || "#ffffff";
+	widgetTzColor.addEventListener("change", function () {
+		localStorage.setItem("browos-widget-tz-color", widgetTzColor.value);
+	});
+}
+if (resetWidgetsButton) {
+	resetWidgetsButton.addEventListener("click", function () {
+		localStorage.removeItem("browos-widget-clock-color");
+		localStorage.removeItem("browos-widget-weather-color");
+		localStorage.removeItem("browos-widget-tz-color");
+		if (widgetClockColor) widgetClockColor.value = "#ffffff";
+		if (widgetWeatherColor) widgetWeatherColor.value = "#ffffff";
+		if (widgetTzColor) widgetTzColor.value = "#ffffff";
+	});
+}
+
+try {
 	document.getElementById("aboutVersion").textContent = "Version " + (chrome.runtime && chrome.runtime.getManifest ? chrome.runtime.getManifest().version : "1.0.2");
+} catch (error) {
+	document.getElementById("aboutVersion").textContent = "Version 1.0.2";
+}
 } catch (error) {
 	document.getElementById("aboutVersion").textContent = "Version 1.0.2";
 }

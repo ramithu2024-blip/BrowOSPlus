@@ -13,6 +13,67 @@
 
 /* Desktop */
 
+.desktop-widgets {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	z-index: 5;
+}
+
+.desktop-widget {
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 12px;
+	padding: 10px 14px;
+	min-width: 140px;
+	color: var(--text);
+	font-size: 13px;
+	backdrop-filter: blur(8px);
+}
+
+.widget-time {
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.desktop-widget {
+	position: relative;
+}
+
+.widget-remove {
+	position: absolute;
+	top: 4px;
+	right: 6px;
+	border: none;
+	background: transparent;
+	color: rgba(255, 255, 255, 0.5);
+	cursor: pointer;
+	font-size: 14px;
+}
+
+.widget-context-menu {
+	position: fixed;
+	background: rgba(30, 30, 36, 0.98);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 8px;
+	padding: 4px 0;
+	z-index: 1000;
+	min-width: 120px;
+}
+
+.wcm-item {
+	padding: 8px 12px;
+	cursor: pointer;
+	font-size: 13px;
+}
+
+.wcm-item:hover {
+	background: rgba(255, 255, 255, 0.08);
+}
+
 .desktop-area {
 	position: fixed;
 

@@ -10,6 +10,15 @@ function siteIcon(host) {
 }
 
 const appCatalog = [
+	{
+		id: "settings",
+		name: "Settings",
+		category: "apps",
+		builtIn: true,
+		icon: "icons/settings-icon.png",
+		window: "settingsWindow",
+		credit: "BrowOS+",
+	},
 	// built into BrowOS
 
 	{
