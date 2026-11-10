@@ -49,7 +49,7 @@ document.addEventListener("keydown", function (event) {
 (function () {
 	const current = (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.getManifest)
 		? chrome.runtime.getManifest().version
-		: "1.0.2";
+		: "2.0.0-beta.1";
 	const lastSeen = localStorage.getItem("browos-version");
 
 	// someone who used BrowOS before this window existed (1.0.0) has this saved;

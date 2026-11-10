@@ -41,7 +41,7 @@ function currentVersion() {
 	try {
 		return chrome.runtime.getManifest().version;
 	} catch (error) {
-		return "1.0.2";
+		return "2.0.0-beta.1";
 	}
 }
 

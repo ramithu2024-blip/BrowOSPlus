@@ -372,10 +372,10 @@ if (taskbarAutoHideToggle) {
 }
 
 try {
-	document.getElementById("aboutVersion").textContent = "Version " + (chrome.runtime && chrome.runtime.getManifest ? chrome.runtime.getManifest().version : "1.0.2");
+	document.getElementById("aboutVersion").textContent = "Version " + (chrome.runtime && chrome.runtime.getManifest ? chrome.runtime.getManifest().version : "2.0.0-beta.1");
 } catch (error) {
-	document.getElementById("aboutVersion").textContent = "Version 1.0.2";
+	document.getElementById("aboutVersion").textContent = "Version 2.0.0-beta.1";
 }
 } catch (error) {
-	document.getElementById("aboutVersion").textContent = "Version 1.0.2";
+	document.getElementById("aboutVersion").textContent = "Version 2.0.0-beta.1";
 }
