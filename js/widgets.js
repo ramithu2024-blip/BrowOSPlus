@@ -144,6 +144,15 @@ widgetContainer.appendChild(clockWidget);
 let clockColor = localStorage.getItem("browos-widget-clock-color") || "#ffffff";
 clockWidget.style.color = clockColor;
 
+window.updateWidgetColors = function () {
+	clockColor = localStorage.getItem("browos-widget-clock-color") || "#ffffff";
+	weatherColor = localStorage.getItem("browos-widget-weather-color") || "#ffffff";
+	tzColor = localStorage.getItem("browos-widget-tz-color") || "#ffffff";
+	if (clockWidget) clockWidget.style.color = clockColor;
+	if (weatherWidget) weatherWidget.style.color = weatherColor;
+	if (tzWidget) tzWidget.style.color = tzColor;
+};
+
 clockWidget.addEventListener("dblclick", async () => {
 	const c = await showPrompt("Clock color (hex):", clockColor);
 	if (c) {

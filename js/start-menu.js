@@ -6,6 +6,12 @@ const powerButton = document.getElementById("powerButton");
 
 startButton.addEventListener("click", function () {
 	startMenu.classList.toggle("show");
+
+	const taskbar = document.querySelector(".taskbar");
+
+	if (taskbar && startMenu.classList.contains("show")) {
+		taskbar.classList.remove("hidden");
+	}
 });
 
 powerButton.addEventListener("click", async function () {

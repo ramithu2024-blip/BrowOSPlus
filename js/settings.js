@@ -345,6 +345,32 @@ if (resetWidgetsButton) {
 	});
 }
 
+const taskbarPositionSelect = document.getElementById("taskbarPositionSelect");
+const taskbarStyleSelect = document.getElementById("taskbarStyleSelect");
+const taskbarAutoHideToggle = document.getElementById("taskbarAutoHideToggle");
+
+if (taskbarPositionSelect) {
+	taskbarPositionSelect.value = localStorage.getItem("browos-taskbar-position") || "bottom";
+	taskbarPositionSelect.addEventListener("change", function () {
+		localStorage.setItem("browos-taskbar-position", taskbarPositionSelect.value);
+		if (typeof applyTaskbarPosition === "function") applyTaskbarPosition();
+	});
+}
+if (taskbarStyleSelect) {
+	taskbarStyleSelect.value = localStorage.getItem("browos-taskbar-style") || "original";
+	taskbarStyleSelect.addEventListener("change", function () {
+		localStorage.setItem("browos-taskbar-style", taskbarStyleSelect.value);
+		if (typeof applyTaskbarStyle === "function") applyTaskbarStyle();
+	});
+}
+if (taskbarAutoHideToggle) {
+	taskbarAutoHideToggle.checked = localStorage.getItem("browos-taskbar-autohide") === "on";
+	taskbarAutoHideToggle.addEventListener("change", function () {
+		localStorage.setItem("browos-taskbar-autohide", taskbarAutoHideToggle.checked ? "on" : "off");
+		if (typeof applyTaskbarAutoHide === "function") applyTaskbarAutoHide();
+	});
+}
+
 try {
 	document.getElementById("aboutVersion").textContent = "Version " + (chrome.runtime && chrome.runtime.getManifest ? chrome.runtime.getManifest().version : "1.0.2");
 } catch (error) {

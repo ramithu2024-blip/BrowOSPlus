@@ -915,13 +915,20 @@ async function openFile(entry) {
 // Window manager integration
 const explorerButton = document.getElementById("explorerButton");
 
+function openFilesWindow() {
+	if (!explorerWindow.classList.contains("show")) {
+		explorerWindow.classList.add("show");
+	}
+	if (typeof bringToFront === "function") bringToFront(explorerWindow);
+	initFiles();
+	if (explorerButton) {
+		explorerButton.classList.add("running", "focused");
+	}
+}
+
 if (explorerButton) {
 	explorerButton.addEventListener("click", function () {
-		explorerWindow.classList.toggle("show");
-		if (explorerWindow.classList.contains("show")) {
-			if (typeof bringToFront === "function") bringToFront(explorerWindow);
-			initFiles();
-		}
+		launchApp("files");
 	});
 }
 
@@ -942,6 +949,21 @@ document.addEventListener("keydown", function (e) {
 		document.querySelectorAll(".file-row").forEach(r => r.classList.add("selected"));
 	}
 });
+
+// Files taskbar integration
+
+if (typeof MutationObserver !== "undefined" && explorerWindow) {
+	const filesTaskbarObserver = new MutationObserver(function () {
+		if (!explorerButton) return;
+		if (explorerWindow.classList.contains("show")) {
+			explorerButton.classList.add("running");
+			explorerButton.classList.add("focused");
+		} else {
+			explorerButton.classList.remove("focused");
+		}
+	});
+	filesTaskbarObserver.observe(explorerWindow, { attributes: true, attributeFilter: ["class"] });
+}
 
 // Auto-init on load
 setTimeout(initFiles, 0);

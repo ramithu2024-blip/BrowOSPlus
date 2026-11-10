@@ -136,6 +136,7 @@ renameApp("helium", "browser");
 // Ensure the bundled Craft App Suite is visible in the Start menu
 
 const craftAppIds = [
+	"files",
 	"settings",
 	"photocraft",
 	"vectorcraft",
@@ -474,6 +475,15 @@ appCatalog.forEach(function (app) {
 
 function launchApp(id) {
 	try {
+		if (id === "files") {
+			const app = getApp(id);
+			const w = app && app.window ? document.getElementById(app.window) : document.getElementById("explorerWindow");
+			if (typeof initFiles === "function") initFiles();
+			if (w) {
+				openApp(w);
+			}
+			return;
+		}
 		if (id === "settings") {
 		const settingsWindow = document.getElementById("settingsWindow");
 

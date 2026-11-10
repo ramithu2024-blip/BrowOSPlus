@@ -429,6 +429,40 @@
 					<h2>Taskbar</h2>
 
 					<div class="setting-row">
+						<span>Taskbar position</span>
+						<select id="taskbarPositionSelect">
+							<option value="bottom">Bottom</option>
+							<option value="top">Top</option>
+							<option value="left">Left</option>
+							<option value="right">Right</option>
+						</select>
+					</div>
+
+					<div class="setting-row">
+						<span>Taskbar style</span>
+						<select id="taskbarStyleSelect">
+							<option value="original">Original</option>
+							<option value="windows">Windows Taskbar</option>
+							<option value="mac">macOS Dock</option>
+						</select>
+					</div>
+
+					<div class="setting-row">
+						<span>Auto-hide taskbar</span>
+
+						<label class="switch">
+							<input type="checkbox" id="taskbarAutoHideToggle">
+							<span class="slider"></span>
+						</label>
+					</div>
+
+					<div class="setting-row">
+						<span>Dock magnification</span>
+						<input type="range" id="dockMagnificationSlider" min="1" max="2.5" step="0.1">
+						<span id="dockMagnificationValue">1.5x</span>
+					</div>
+
+					<div class="setting-row">
 						<span>Show clock</span>
 
 						<label class="switch">
@@ -933,8 +967,8 @@
 				<img src="icons/browos-logo.png" alt="Start">
 			</button>
 
-			<button class="explorer-button" id="explorerButton">
-				<img src="icons/explorer-icon.png" alt="Explorer">
+			<button class="taskbar-app-button" id="explorerButton" data-taskbar-app="files">
+				<img src="icons/explorer-icon.png" alt="Files">
 			</button>
 
 			<div class="taskbar-apps" id="taskbarApps"></div>

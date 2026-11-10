@@ -215,11 +215,7 @@
 	background: rgba(255, 255, 255, 0.1);
 }
 
-.taskbar-app-button.active {
-	background: rgba(255, 255, 255, 0.12);
-}
-
-.taskbar-app-button.active::after {
+.taskbar-app-button.running::after {
 	content: "";
 	position: absolute;
 	bottom: 2px;
@@ -233,10 +229,6 @@
 
 .taskbar-app-button.focused {
 	background: color-mix(in srgb, var(--accent) 20%, transparent);
-}
-
-.taskbar-app-button.focused::after {
-	display: none;
 }
 
 .taskbar-app-button img {

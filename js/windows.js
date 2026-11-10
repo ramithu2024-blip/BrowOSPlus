@@ -6,6 +6,10 @@ function bringToFront(windowElement) {
 	highestWindowZ++;
 
 	windowElement.style.zIndex = highestWindowZ;
+
+	if (typeof window.setActiveTaskbarApp === "function" && windowElement && windowElement.dataset && windowElement.dataset.appId) {
+		window.setActiveTaskbarApp(windowElement.dataset.appId);
+	}
 }
 
 function setupWindow(appWindow) {

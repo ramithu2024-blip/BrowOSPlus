@@ -11,6 +11,15 @@ function siteIcon(host) {
 
 const appCatalog = [
 	{
+		id: "files",
+		name: "Files",
+		category: "apps",
+		builtIn: true,
+		icon: "icons/explorer-icon.png",
+		window: "explorerWindow",
+		credit: "BrowOS+",
+	},
+	{
 		id: "settings",
 		name: "Settings",
 		category: "apps",

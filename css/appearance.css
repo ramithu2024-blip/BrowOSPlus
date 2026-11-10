@@ -165,7 +165,7 @@ input:checked + .slider {
 .folder-nav.active,
 .apps-menu-item.active,
 .apps-grid-item.selected,
-.taskbar-app-button.active {
+.taskbar-app-button.focused {
 	background: color-mix(in srgb, var(--accent) 30%, transparent);
 }
 

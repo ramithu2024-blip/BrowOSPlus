@@ -114,6 +114,10 @@
 	display: flex;
 }
 
+body .start-menu.sm-top { top: 84px; bottom: auto; }
+body .start-menu.sm-left { left: 84px; bottom: 16px; }
+body .start-menu.sm-right { right: 16px; left: auto; bottom: 16px; }
+
 .start-menu h2 {
 	margin: 4px 8px 10px;
 	font-size: 18px;
@@ -173,3 +177,40 @@
 
 	pointer-events: none;
 }
+
+/* Taskbar position and style additions */
+.taskbar.pos-bottom { bottom: 16px; left: 50%; top: auto; right: auto; transform: translateX(-50%); flex-direction: row; }
+.taskbar.pos-top { top: 16px; bottom: auto; left: 50%; right: auto; transform: translateX(-50%); flex-direction: row; }
+.taskbar.pos-left { left: 16px; top: 50%; bottom: auto; right: auto; transform: translateY(-50%); flex-direction: column; width: 58px; min-width: 58px; height: auto; max-height: calc(100vh - 32px); overflow-y: auto; overflow-x: hidden; }
+.taskbar.pos-right { right: 16px; top: 50%; bottom: auto; left: auto; transform: translateY(-50%); flex-direction: column; width: 58px; min-width: 58px; height: auto; max-height: calc(100vh - 32px); overflow-y: auto; overflow-x: hidden; }
+
+.taskbar.pos-left .taskbar-left,
+.taskbar.pos-right .taskbar-left {
+	flex-direction: column;
+	align-items: center;
+}
+
+.taskbar.pos-left .taskbar-right,
+.taskbar.pos-right .taskbar-right {
+	align-items: center;
+	margin-left: 0;
+}
+
+.taskbar.style-windows { width: 100%; left: 0; right: 0; bottom: 0; top: auto; transform: none; border-radius: 0; min-width: 0; background: rgba(20, 20, 28, 0.92); }
+.taskbar.style-windows.pos-top { top: 0; bottom: auto; }
+.taskbar.style-windows.pos-left { width: 58px; height: 100%; top: 0; left: 0; transform: none; flex-direction: column; }
+.taskbar.style-windows.pos-right { width: 58px; height: 100%; top: 0; right: 0; transform: none; flex-direction: column; }
+
+.taskbar.style-mac { min-width: 0; gap: 6px; padding: 6px 12px; border-radius: 24px; background: rgba(20, 20, 28, 0.6); backdrop-filter: blur(20px); overflow: visible; }
+.taskbar.style-mac .taskbar-right { display: none; }
+
+.taskbar.autohide { transition: transform 0.2s ease; }
+.taskbar.autohide.hidden.pos-bottom { transform: translateX(-50%) translateY(calc(100% + 16px)); }
+.taskbar.autohide.hidden.pos-top { transform: translateX(-50%) translateY(calc(-100% - 16px)); }
+.taskbar.autohide.hidden.pos-left { transform: translate(calc(-100% - 16px), -50%); }
+.taskbar.autohide.hidden.pos-right { transform: translate(calc(100% + 16px), -50%); }
+
+.taskbar.style-windows.autohide.hidden.pos-bottom { transform: translateY(calc(100% + 16px)); }
+.taskbar.style-windows.autohide.hidden.pos-top { transform: translateY(calc(-100% - 16px)); }
+.taskbar.style-windows.autohide.hidden.pos-left { transform: translateX(calc(-100% - 16px)); }
+.taskbar.style-windows.autohide.hidden.pos-right { transform: translateX(calc(100% + 16px)); }
